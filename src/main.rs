@@ -1,5 +1,7 @@
-use std::env;
+mod commands;
 
+use std::env;
+use serenity::all::{Command, CreateAttachment, CreateEmbed, CreateEmbedFooter, GuildId, Timestamp};
 use serenity::async_trait;
 use serenity::builder::CreateMessage;
 use serenity::model::channel::Message;
@@ -10,6 +12,7 @@ struct Handler;
 
 #[async_trait]
 impl EventHandler for Handler {
+    /*
     async fn message(&self, context: Context, msg: Message) {
         if msg.content == "!messageme" {
             // If the `utils`-feature is enabled, then model structs will have a lot of useful
@@ -23,9 +26,60 @@ impl EventHandler for Handler {
             channel.send_message(&context, builder).await.unwrap();
         }
     }
+    */
 
-    async fn ready(&self, _: Context, ready: Ready) {
+    /*
+    async fn message(&self, ctx: Context, msg: Message) {
+        if msg.content == "!hello" {
+            // The create message builder allows you to easily create embeds and messages using a
+            // builder syntax.
+            // This example will create a message that says "Hello, World!", with an embed that has
+            // a title, description, an image, three fields, and a footer.
+            let footer = CreateEmbedFooter::new("This is a footer");
+            let embed = CreateEmbed::new()
+                .title("This is a title")
+                .description("This is a description")
+                .image("attachment://ferris_eyes.png")
+                .fields(vec![
+                    ("This is the first field", "This is a field body", true),
+                    ("This is the second field", "Both fields are inline", true),
+                ])
+                .field("This is the third field", "This is not an inline field", false)
+                .footer(footer)
+                // Add a timestamp for the current time
+                // This also accepts a rfc3339 Timestamp
+                .timestamp(Timestamp::now());
+            let builder = CreateMessage::new()
+                .content("Hello, World!")
+                .embed(embed)
+                .add_file(CreateAttachment::path("./Untitled.png").await.unwrap());
+            let msg = msg.channel_id.send_message(&ctx.http, builder).await;
+
+            if let Err(why) = msg {
+                println!("Error sending message: {why:?}");
+            }
+        }
+    }
+     */
+
+    async fn ready(&self, ctx: Context, ready: Ready) {
         println!("{} is connected!", ready.user.name);
+        
+        ready.guilds.iter().for_each(async |guild| {
+            guild.id.set_commands(&ctx.http, vec![
+                commands::test::register()
+            ])
+                .await.expect("TODO: panic message");
+
+        });
+            
+        println!("I now have the following guild slash commands: {commands:#?}");
+
+        let guild_command =
+            Command::create_global_command(&ctx.http, commands::test::register())
+                .await;
+
+        println!("I created the following global slash command: {guild_command:#?}");
     }
 }
 
@@ -38,7 +92,7 @@ async fn main() {
         | GatewayIntents::MESSAGE_CONTENT;
     let mut client =
         Client::builder(&token, intents).event_handler(Handler).await.expect("Err creating client");
-
+    
     if let Err(why) = client.start().await {
         println!("Client error: {why:?}");
     }
