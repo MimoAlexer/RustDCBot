@@ -3,8 +3,6 @@ mod commands;
 use std::env;
 use serenity::all::{Command, CreateAttachment, CreateEmbed, CreateEmbedFooter, GuildId, Timestamp};
 use serenity::async_trait;
-use serenity::builder::CreateMessage;
-use serenity::model::channel::Message;
 use serenity::model::gateway::Ready;
 use serenity::prelude::*;
 
@@ -64,22 +62,16 @@ impl EventHandler for Handler {
 
     async fn ready(&self, ctx: Context, ready: Ready) {
         println!("{} is connected!", ready.user.name);
-        
-        ready.guilds.iter().for_each(async |guild| {
+
+        for guild in ready.guilds {
             guild.id.set_commands(&ctx.http, vec![
                 commands::test::register()
-            ])
-                .await.expect("TODO: panic message");
+            ]).await.expect("TODO: panic message");
 
-        });
-            
-        println!("I now have the following guild slash commands: {commands:#?}");
-
-        let guild_command =
-            Command::create_global_command(&ctx.http, commands::test::register())
-                .await;
-
-        println!("I created the following global slash command: {guild_command:#?}");
+            let guild_command =
+                Command::create_global_command(&ctx.http, commands::test::register())
+                    .await;
+        }
     }
 }
 
