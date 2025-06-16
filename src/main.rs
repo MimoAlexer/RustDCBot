@@ -1,7 +1,7 @@
 mod commands;
 
 use std::env;
-use serenity::all::{Command, CreateAttachment, CreateEmbed, CreateEmbedFooter, GuildId, Timestamp};
+use serenity::all::{Command, CreateAttachment, CreateEmbed, CreateEmbedFooter, CreateInteractionResponse, CreateInteractionResponseMessage, CreateMessage, GuildId, Interaction, Timestamp};
 use serenity::async_trait;
 use serenity::model::gateway::Ready;
 use serenity::prelude::*;
@@ -59,6 +59,22 @@ impl EventHandler for Handler {
         }
     }
      */
+    
+    async fn interaction_create(&self, ctx: Context, interaction: Interaction) {
+        println!("Received interaction: {:?}", interaction);
+        if let Interaction::Command(command) = interaction {
+            // Handle the command interaction
+            match command.data.name.as_str() {
+                "test" => {
+                    
+                },
+                _ => {
+                    let response = CreateInteractionResponse::Message(CreateInteractionResponseMessage::new().content("Hiii"));
+                    command.create_response(&ctx, response).await.unwrap();
+                }
+            }
+        }
+    }
 
     async fn ready(&self, ctx: Context, ready: Ready) {
         println!("{} is connected!", ready.user.name);
