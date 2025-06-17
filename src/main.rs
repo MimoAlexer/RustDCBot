@@ -65,7 +65,21 @@ impl EventHandler for Handler {
             println!("Received interaction from: {}", ctx.http.get_user(command.user.id).await.unwrap().name);
             match command.data.name.as_str() {
                 "test" => {
-                    let response = CreateInteractionResponse::Message(CreateInteractionResponseMessage::new().content("Hiii"));
+                    let footer = CreateEmbedFooter::new("This is a test footer");
+                    let embed = CreateEmbed::new()
+                        .title("This is a test Title")
+                        .description("This is an important test description, and will be used for testing purposes because of testing its an test and test its an testing")
+                        .image("https://www.google.com/imgres?q=rustlang%20image&imgurl=https%3A%2F%2Fraw.githubusercontent.com%2Frust-lang%2Fwww.rust-lang.org%2Fmaster%2Fstatic%2Fimages%2Frust-social-wide-light.svg&imgrefurl=https%3A%2F%2Fgithub.com%2Frust-lang%2Frust&docid=XM8B8j2nWxA6iM&tbnid=-kYVauVEPTg2UM&vet=12ahUKEwic1deonvmNAxUJwAIHHVi5LbYQM3oECGcQAA..i&w=482&h=240&hcb=2&ved=2ahUKEwic1deonvmNAxUJwAIHHVi5LbYQM3oECGcQAA")
+                        .fields(vec![
+                            ("This is the first field", "This is a field body", true),
+                            ("This is the second field", "Both fields are inline", true),
+                        ])
+                        .field("This is the third field", "This is not an inline field", false)
+                        .footer(footer)
+                        // Add a timestamp for the current time
+                        // This also accepts a rfc3339 Timestamp
+                        .timestamp(Timestamp::now());
+                    let response = CreateInteractionResponse::Message(CreateInteractionResponseMessage::new().embed(embed));
                     command.create_response(&ctx, response).await.unwrap();
                 },
                 _ => {
