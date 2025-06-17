@@ -61,12 +61,12 @@ impl EventHandler for Handler {
      */
     
     async fn interaction_create(&self, ctx: Context, interaction: Interaction) {
-        println!("Received interaction: {:?}", interaction);
         if let Interaction::Command(command) = interaction {
-            // Handle the command interaction
+            println!("Received interaction from: {}", ctx.http.get_user(command.user.id).await.unwrap().name);
             match command.data.name.as_str() {
                 "test" => {
-                    
+                    let response = CreateInteractionResponse::Message(CreateInteractionResponseMessage::new().content("Hiii"));
+                    command.create_response(&ctx, response).await.unwrap();
                 },
                 _ => {
                     let response = CreateInteractionResponse::Message(CreateInteractionResponseMessage::new().content("Hiii"));
@@ -80,6 +80,10 @@ impl EventHandler for Handler {
         println!("{} is connected!", ready.user.name);
 
         for guild in ready.guilds {
+            let commands = guild.id.get_commands(&ctx.http).await.unwrap();
+            for command in commands {
+                guild.id.delete_command(&ctx.http, command.id).await.unwrap();
+            }
             guild.id.set_commands(&ctx.http, vec![
                 commands::test::register()
             ]).await.expect("TODO: panic message");
