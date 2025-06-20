@@ -34,7 +34,7 @@ impl EventHandler for Handler {
             println!("Received interaction from: {}", ctx.http.get_user(command.user.id).await.unwrap().name);
             match command.data.name.as_str() {
                 "info" => {
-                    info::run(command, &ctx).await;
+                    info::run(command, &ctx, ).await;
                 },
                 _ => {
                     let response = CreateInteractionResponse::Message(CreateInteractionResponseMessage::new().content(format!("I... dont really understand {}", command.data.name.as_str())));
