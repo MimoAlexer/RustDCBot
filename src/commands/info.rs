@@ -1,7 +1,6 @@
-use std::sync::Arc;
-use std::time::Duration;
-use serenity::all::{CommandInteraction, Context, CreateCommand, CreateEmbed, CreateEmbedFooter, CreateInteractionResponse, CreateInteractionResponseMessage, Interaction, ShardManager, Timestamp};
+use serenity::all::{CommandInteraction, Context, CreateCommand, CreateEmbed, CreateEmbedFooter, CreateInteractionResponse, CreateInteractionResponseMessage, ShardManager, Timestamp};
 use serenity::prelude::TypeMapKey;
+use std::sync::Arc;
 
 struct ShardManagerContainer;
 impl TypeMapKey for ShardManagerContainer {

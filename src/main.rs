@@ -34,6 +34,7 @@ impl EventHandler for Handler {
             println!("Received interaction from: {}", ctx.http.get_user(command.user.id).await.unwrap().name);
             match command.data.name.as_str() {
                 "info" => {
+                    // WHY RUST WHYYYY!!!
                     info::run(command, &ctx, ).await;
                 },
                 _ => {
